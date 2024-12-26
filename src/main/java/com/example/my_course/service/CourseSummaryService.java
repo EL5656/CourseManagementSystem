@@ -23,21 +23,24 @@ public class CourseSummaryService {
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void saveCourseSummary() {
-
         List<Course> courses = courseRepository.findAll();
-
-        //temporary not delete will repeat
-        //find method to avoid repeat instead of del all
-        //reason - id will keep changing
-        courseSummaryRepository.deleteAll();
-
         for (int i = 0; i < courses.size(); i++) {
             Course course = courses.get(i);
-            CourseSummary courseSummary = new CourseSummary();
-            courseSummary.setLecturerId(course.getLecturer() != null ? course.getLecturer().getLecturerId() : 0L);
-            courseSummary.setCourseId(course.getCourseId());
-            courseSummary.setLatestUpdateTimestamp(LocalDateTime.now()); // Set current date and time
-            courseSummaryRepository.save(courseSummary);
+
+            CourseSummary existingCourseSummary = courseSummaryRepository.findByCourseIdAndLecturerId(course.getCourseId(),
+                    course.getLecturer() != null ? course.getLecturer().getLecturerId() : 0L);
+
+            if (existingCourseSummary != null) {
+                //update
+                existingCourseSummary.setLatestUpdateTimestamp(LocalDateTime.now());
+                courseSummaryRepository.save(existingCourseSummary);
+            } else {
+                CourseSummary courseSummary = new CourseSummary();
+                courseSummary.setLecturerId(course.getLecturer() != null ? course.getLecturer().getLecturerId() : 0L);
+                courseSummary.setCourseId(course.getCourseId());
+                courseSummary.setLatestUpdateTimestamp(LocalDateTime.now());
+                courseSummaryRepository.save(courseSummary);
+            }
         }
     }
 }
