@@ -7,7 +7,9 @@ import com.example.my_course.repository.CourseRepository;
 import com.example.my_course.repository.LecturerRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseService {
@@ -21,17 +23,6 @@ public class CourseService {
         return course.getLecturer().getLecturerId();
     }
 
-    public List<String> getCourseSummaries() {
-        List<Object[]> results = courseRepository.findCourseIdAndLecturerId();
-        List<String> summaries = new ArrayList<>();
-
-        for (int i = 0; i < results.size(); i++) {
-            Object[] row = results.get(i);
-            summaries.add("Course ID: " + row[0] + ", Lecturer ID: " + row[1]);
-        }
-
-        return summaries;
-    }
     public Course addCourse(Course course){
         if(course.getLecturer()!=null && getLecturerId(course)!=null){
             Lecturer lecturer = lecturerRepository.findById(getLecturerId(course))
@@ -45,6 +36,7 @@ public class CourseService {
     public List<Course> getAllCourse(){
         return courseRepository.findAll();
     }
+
 
     public Course getCourseById(Long id) {
         return courseRepository.findById(id).orElse(null);
@@ -69,4 +61,10 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
+    public Map<String, Long> getCourseAndLecturerIds(long courseId, long lecturerId) {
+        Map<String, Long> ids = new HashMap<>();
+        ids.put("courseId", courseId);
+        ids.put("lecturerId", lecturerId);
+        return ids;
+    }
 }

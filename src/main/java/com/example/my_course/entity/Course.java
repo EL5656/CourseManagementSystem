@@ -3,6 +3,7 @@ package com.example.my_course.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "course")
 public class Course {
     @Id
     @GeneratedValue
@@ -24,6 +25,16 @@ public class Course {
     public Course() {
 
     }
+
+    @ManyToOne(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(
+            name = "id",
+            referencedColumnName = "id"
+    )
+    private CourseSummary courseSummary;
+
     @ManyToOne(
             cascade = CascadeType.ALL
     )
@@ -80,6 +91,8 @@ public class Course {
                 ", name='" + name + '\'' +
                 ", desc='" + desc + '\'' +
                 ", price=" + price +
+                ", lecturerId=" + (lecturer != null ? lecturer.getLecturerId() : 0) +
                 '}';
     }
+
 }

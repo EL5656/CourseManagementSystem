@@ -60,8 +60,4 @@ public class CourseController {
         return new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/courses/summary")
-    public List<String> getCourseSummaries() {
-        return courseService.getCourseSummaries();
-    }
 }
