@@ -26,6 +26,9 @@ public class CourseSummaryService {
 
         List<Course> courses = courseRepository.findAll();
 
+        //temporary not delete will repeat
+        //find method to avoid repeat instead of del all
+        //reason - id will keep changing
         courseSummaryRepository.deleteAll();
 
         for (int i = 0; i < courses.size(); i++) {

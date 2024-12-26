@@ -1,6 +1,5 @@
 package com.example.my_course.service;
 
-import java.util.ArrayList;
 import com.example.my_course.entity.Course;
 import com.example.my_course.entity.Lecturer;
 import com.example.my_course.repository.CourseRepository;

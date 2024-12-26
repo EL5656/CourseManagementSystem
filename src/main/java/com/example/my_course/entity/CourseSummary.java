@@ -8,6 +8,8 @@ import java.util.Date;
 @Entity
 public class CourseSummary {
 
+    // make this a primary key - todo
+    // avoid id refresh everytime rerun application - todo
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq")
     @SequenceGenerator(name = "course_seq", sequenceName = "course_id_seq", allocationSize = 1)
