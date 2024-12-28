@@ -59,11 +59,4 @@ public class CourseService {
     public void deleteCourse(Long id){
         courseRepository.deleteById(id);
     }
-
-    public Map<String, Long> getCourseAndLecturerIds(long courseId, long lecturerId) {
-        Map<String, Long> ids = new HashMap<>();
-        ids.put("courseId", courseId);
-        ids.put("lecturerId", lecturerId);
-        return ids;
-    }
 }
