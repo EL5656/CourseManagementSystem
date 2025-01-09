@@ -1,6 +1,8 @@
 package com.example.my_course.config;
 
 import com.example.my_course.auth.JWTAuthFilter;
+import com.example.my_course.auth.JWTService;
+import com.example.my_course.repository.UserRepository;
 import com.example.my_course.service.CustomUserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,15 +27,19 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final JWTAuthFilter jwtAuthFilter;
+    private final JWTService jwtService;
+    private final CustomUserDetailService customUserDetailService;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(JWTAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
+    public SecurityConfig(JWTService jwtService, CustomUserDetailService customUserDetailService, UserRepository userRepository) {
+        this.jwtService = jwtService;
+        this.customUserDetailService = customUserDetailService;
+        this.userRepository = userRepository;
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailService();
+    public JWTAuthFilter jwtAuthFilter() {
+        return new JWTAuthFilter(jwtService, customUserDetailService);  // Proper dependency injection
     }
 
     @Bean
@@ -41,8 +47,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/my_course_store/courses/view", "/my_course_store/auth/register/**").permitAll()
-                        //.requestMatchers("/my_course_store/auth/register/{role}").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/my_course_store/courses/view",
+                                "/my_course_store/auth/register/**",
+                                "/my_course_store/auth/authenticate/**")
+                        .permitAll()
                         .requestMatchers(
                                 "/my_course_store/courses/create",
                                 "/my_course_store/courses/update/**",
@@ -54,8 +62,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless because we're using JWT
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(corsFilter(), JWTAuthFilter.class);
+                .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)  // Add CORS filter before Authentication filter
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);  // Add JWTAuthFilter before UsernamePasswordAuthenticationFilter
         return http.build();
     }
 
@@ -68,15 +76,19 @@ public class SecurityConfig {
     }
 
     @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailService(userRepository); // Define UserDetailsService bean
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Define PasswordEncoder bean
     }
-
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();

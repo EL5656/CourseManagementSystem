@@ -49,12 +49,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/authenticate")
+    //todo - test this api with postman
+    //todo - check security config
+    @PostMapping("/authenticate/{role}")
     public ResponseEntity<AuthenticationResponse> authenticate(
+            @PathVariable String role,
             @RequestBody AuthenticationRequest request
     ) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        AuthenticationResponse response = authenticationService.authenticate(request);
+
+        if (response == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new AuthenticationResponse(null, "Access denied"));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
 
     //token
 }

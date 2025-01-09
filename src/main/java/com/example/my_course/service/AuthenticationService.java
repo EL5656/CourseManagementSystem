@@ -26,6 +26,7 @@ public class AuthenticationService {
             AuthenticationManager authenticationManager
     ) {
         this.userRepository = userRepository;
+        System.out.println("### UserRepository Injected: " + userRepository);
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -77,24 +78,22 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
-            // Authenticate the user using the provided email and password
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
                             request.getPassword()
                     )
             );
-
             var user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             var jwtToken = jwtService.generateToken(user);
 
-            return new AuthenticationResponse(jwtToken, "jwt token generated successfully for login"); // Success case
+            return new AuthenticationResponse(jwtToken, "JWT token generated successfully for login");
 
         } catch (Exception e) {
-            // Return an error message if authentication or user lookup fails
-            return new AuthenticationResponse(null, "Authentication failed: " + e.getMessage()); // Error case
+            return new AuthenticationResponse(null, "Authentication failed: " + e.getMessage());
         }
     }
+
 }

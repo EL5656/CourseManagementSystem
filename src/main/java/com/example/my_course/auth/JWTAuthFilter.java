@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +17,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 @Component
 public class JWTAuthFilter extends OncePerRequestFilter {
-    private JWTService jwtService;
+    private final JWTService jwtService;
     private UserDetailsService userDetailsService;
+
+    // In the constructor
+    @Autowired
+    public JWTAuthFilter(JWTService jwtService, UserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService; // Inject UserDetailsService directly
+    }
 
     @Override
     protected void doFilterInternal(
@@ -32,7 +40,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(httpServletRequest,httpServletResponse);
             return;
         }
-        jwt = authHeader.substring(7);
+        jwt = authHeader.substring(7).trim();
         userEmail =jwtService.extractUsernameFromToken(jwt);//extract user email from JWT Token
         //if token is valid and no authentication is set at the context
         if(userEmail !=null&& SecurityContextHolder.getContext().getAuthentication()==null){//when user not authenticated yet
