@@ -1,6 +1,9 @@
 package com.example.my_course.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.sql.Blob;
 
 @Entity
 @Table(name = "course")
@@ -14,6 +17,11 @@ public class Course {
     private String desc;
     @Column(name="course_price")
     private Double price;
+
+    @Lob
+    @JsonIgnore
+    @Column(name = "course_image")
+    private Blob image;
 
     public Course(String name, String desc, Double price, Lecturer lecturer) {
         this.name = name;
@@ -96,6 +104,14 @@ public class Course {
         this.price = price;
     }
 
+    public Blob getImage() {
+        return image;
+    }
+
+    public void setImage(Blob image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Course{" +
@@ -103,8 +119,8 @@ public class Course {
                 ", name='" + name + '\'' +
                 ", desc='" + desc + '\'' +
                 ", price=" + price +
+                ", image=" + (image != null ? "Present" : "Not Present") +
                 ", lecturerId=" + (lecturer != null ? lecturer.getLecturerId() : 0) +
                 '}';
     }
-
 }

@@ -89,7 +89,8 @@ public class AuthenticationService {
 
             var jwtToken = jwtService.generateToken(user);
 
-            return new AuthenticationResponse(jwtToken, "JWT token generated successfully for login");
+            //JWT token generated successfully for login
+            return new AuthenticationResponse(jwtToken, "Success");
 
         } catch (Exception e) {
             return new AuthenticationResponse(null, "Authentication failed: " + e.getMessage());

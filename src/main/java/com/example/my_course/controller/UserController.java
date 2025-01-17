@@ -49,8 +49,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //todo - test this api with postman
-    //todo - check security config
     @PostMapping("/authenticate/{role}")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @PathVariable String role,

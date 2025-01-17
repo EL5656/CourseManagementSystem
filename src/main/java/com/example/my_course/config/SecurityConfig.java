@@ -47,23 +47,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/my_course_store/courses/view",
-                                "/my_course_store/auth/register/**",
-                                "/my_course_store/auth/authenticate/**")
-                        .permitAll()
-                        .requestMatchers(
-                                "/my_course_store/courses/create",
-                                "/my_course_store/courses/update/**",
-                                "/my_course_store/courses/delete/**"
-                        ).hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        // Temporarily allowing all requests without authentication
+                        .anyRequest().permitAll()  // This will allow all endpoints without authentication
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless because we're using JWT
-                )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)  // Add CORS filter before Authentication filter
-                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);  // Add JWTAuthFilter before UsernamePasswordAuthenticationFilter
+                );
+        // Commenting out authentication provider and filters for the time being
+        //.authenticationProvider(authenticationProvider())
+        //.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)  // Add CORS filter before Authentication filter
+        //.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);  // Add JWTAuthFilter before UsernamePasswordAuthenticationFilter
         return http.build();
     }
 
@@ -89,12 +82,13 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Define PasswordEncoder bean
     }
+
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "*"));  // Allow frontend and any origin (Postman)
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        corsConfig.setAllowedHeaders(Arrays.asList("*")); // Allow headers
+        corsConfig.setAllowedHeaders(Arrays.asList("*")); // Allow all headers
         corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
