@@ -3,7 +3,9 @@ package com.example.my_course.controller;
 import com.example.my_course.dto.CourseDto;
 import com.example.my_course.entity.Course;
 import com.example.my_course.service.CourseService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +32,41 @@ public class CourseController {
             return new ResponseEntity<>(course,HttpStatus.OK);
         }
         return new ResponseEntity<>("Course is not found", HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/image/{id}")
+    public ResponseEntity<byte[]> getImageByCourseId(@PathVariable long id){
+        try {
+            byte[] imageBytes = courseService.getImageByCourse(id);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return ResponseEntity.ok().headers(headers).body(imageBytes);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/update_with_lecturer/{id}")
+    public ResponseEntity<Course> updateProduct(
+            @PathVariable long id,
+            @RequestParam String name,
+            @RequestParam String desc,
+            @RequestParam Double price,
+            @RequestParam(required = false) MultipartFile imageFile,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String email
+    ) {
+        try {
+            Course updatedCourse = courseService.updateCourse(id, name, desc, price, imageFile, firstName, lastName, email);
+            return ResponseEntity.ok(updatedCourse);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/create_with_lecturer")
@@ -59,7 +96,6 @@ public class CourseController {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @PostMapping("/create")

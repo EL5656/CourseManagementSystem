@@ -42,6 +42,48 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    public byte[] getImageByCourse(long courseId) throws SQLException {
+        Course course = courseRepository.findById(courseId).orElseThrow(()->
+                new RuntimeException("No image found with ID "+courseId)
+        );
+
+        if(course.getImage()!=null){
+            Blob imageBlob = course.getImage();
+            return imageBlob.getBytes(1, (int) imageBlob.length());
+        }else{
+            throw new RuntimeException("No image found for product with ID: " + courseId);
+        }
+    }
+
+    public Course updateCourse(
+            long id, String name, String desc, Double price, MultipartFile imageFile,
+            String firstName, String lastName, String email)
+            throws IOException, SQLException {
+
+        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+
+        course.setName(name);
+        course.setDesc(desc);
+        course.setPrice(price);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            byte[] imageBytes = imageFile.getBytes();
+            Blob photoBlob = new SerialBlob(imageBytes);
+            course.setImage(photoBlob);
+        }
+
+        Lecturer lecturer = course.getLecturer();
+        if (lecturer != null) {
+            lecturer.setFirstName(firstName);
+            lecturer.setLastName(lastName);
+            lecturer.setEmail(email);
+        }else{
+            throw new IllegalStateException("No lecturer associated with the course.");
+        }
+        course.setLecturer(lecturer);
+        return courseRepository.save(course);
+    }
+
     public Course createCourseWithLecturer(
             String name, String desc, Double price, MultipartFile imageFile,
             String firstName, String lastName, String email
