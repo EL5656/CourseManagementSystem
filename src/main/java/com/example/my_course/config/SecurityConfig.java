@@ -46,17 +46,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // Temporarily allowing all requests without authentication
-                        .anyRequest().permitAll()  // This will allow all endpoints without authentication
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless because we're using JWT
-                );
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
         // Commenting out authentication provider and filters for the time being
         //.authenticationProvider(authenticationProvider())
         //.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)  // Add CORS filter before Authentication filter
-        //.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);  // Add JWTAuthFilter before UsernamePasswordAuthenticationFilter
+        .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);  // Add JWTAuthFilter before UsernamePasswordAuthenticationFilter
         return http.build();
     }
 
@@ -84,16 +85,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "*"));  // Allow frontend and any origin (Postman)
+        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // frontend URL here
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        corsConfig.setAllowedHeaders(Arrays.asList("*")); // Allow all headers
+        corsConfig.setAllowedHeaders(Arrays.asList("*"));
         corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig); // Apply CORS configuration globally
+        source.registerCorsConfiguration("/**", corsConfig);
 
-        return new CorsFilter(source);
+        return source;
     }
 }

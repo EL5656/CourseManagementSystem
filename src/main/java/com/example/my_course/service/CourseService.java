@@ -42,6 +42,11 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    public String getImageFileType(long id) {
+        String fileExtension = "jpg"; // Hardcoded for illustration
+        return fileExtension;
+    }
+
     public byte[] getImageByCourse(long courseId) throws SQLException {
         Course course = courseRepository.findById(courseId).orElseThrow(()->
                 new RuntimeException("No image found with ID "+courseId)

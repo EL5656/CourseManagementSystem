@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/my_course_store/courses")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CourseController {
     private final CourseService courseService;
     public CourseController(CourseService courseService) {
@@ -35,11 +36,18 @@ public class CourseController {
     }
 
     @GetMapping("/image/{id}")
-    public ResponseEntity<byte[]> getImageByCourseId(@PathVariable long id){
+    public ResponseEntity<byte[]> getImageByCourseId(@PathVariable long id) {
         try {
             byte[] imageBytes = courseService.getImageByCourse(id);
+            if (imageBytes == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String fileType = courseService.getImageFileType(id); // Service method to get the file type, e.g., "jpg", "png"
+            MediaType mediaType = fileType.equals("png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
+            headers.setContentType(mediaType);
             return ResponseEntity.ok().headers(headers).body(imageBytes);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -47,6 +55,7 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     @PutMapping("/update_with_lecturer/{id}")
     public ResponseEntity<Course> updateProduct(
