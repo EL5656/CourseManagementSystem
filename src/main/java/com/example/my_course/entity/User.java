@@ -20,6 +20,11 @@ public class User implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     public User(String username, String email, String mobile, String password, Role role) {
         this.username = username;
         this.email = email;
@@ -27,8 +32,17 @@ public class User implements UserDetails {
         this.password = password;
         this.role = role;
     }
+
     public User(){
 
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     public Long getUid() {
@@ -104,5 +118,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid=" + uid +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                '}';
     }
 }

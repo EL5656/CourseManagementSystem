@@ -42,8 +42,7 @@ public class Course {
             cascade = CascadeType.ALL
     )
     @JoinColumn(
-            name = "id",
-            referencedColumnName = "id"
+            name = "id"
     )
     private CourseSummary courseSummary;
 
@@ -59,8 +58,7 @@ public class Course {
             cascade = CascadeType.ALL
     )
     @JoinColumn(
-            name = "lecturer_id",
-            referencedColumnName = "lecturerId"
+            name = "lecturer_id"
     )
     private Lecturer lecturer;
 

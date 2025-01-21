@@ -4,7 +4,6 @@ import com.example.my_course.auth.JWTService;
 import com.example.my_course.dto.AuthenticationRequest;
 import com.example.my_course.dto.AuthenticationResponse;
 import com.example.my_course.dto.RegisterRequest;
-import com.example.my_course.entity.Role;
 import com.example.my_course.entity.User;
 import com.example.my_course.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
