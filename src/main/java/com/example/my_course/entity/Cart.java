@@ -19,6 +19,24 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> item;
+    private double totalAmount;
+
+    public double getTotalAmount() { return totalAmount; }
+
+    public void updateTotalAmount() {
+        this.totalAmount = 0;
+        if (item != null) {
+            for (int i = 0; i < item.size(); i++) {
+                this.totalAmount += item.get(i).getPrice();
+            }
+        }
+    }
+    public List<Item> getCartItems() { return item; }
+
+    public void setCartItems(List<Item> item) {
+        this.item = item;
+        updateTotalAmount();
+    }
 
     @OneToOne
     @JoinColumn(name = "student_uid", referencedColumnName = "uid")
@@ -116,8 +134,6 @@ public class Cart {
         return "Cart{" +
                 "cartId=" + cartId +
                 ", studentEmail='" + studentEmail + '\'' +
-                ", item=" + item +
-                ", student=" + student +
                 ", cartStatus=" + cartStatus +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

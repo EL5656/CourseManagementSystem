@@ -6,6 +6,7 @@ import com.example.my_course.entity.*;
 import com.example.my_course.repository.CartRepository;
 import com.example.my_course.repository.CourseRepository;
 import com.example.my_course.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +26,7 @@ public class CartService {
     public CartService(CartRepository cartRepository,
                        CourseRepository courseRepository,
                        UserRepository userRepository
-                       ) {
+    ) {
         this.cartRepository = cartRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
@@ -60,5 +61,14 @@ public class CartService {
                 System.out.println("Cart already exists for: " + user.getEmail());
             }
         }
+    }
+
+    @Transactional
+    public void updateCartTotalAmount(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        cart.updateTotalAmount();
+        cartRepository.save(cart);
     }
 }

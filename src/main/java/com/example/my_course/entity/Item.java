@@ -20,7 +20,7 @@ public class Item {
     private LocalDateTime addedAt;
     public Item() {}
 
-    public Item(Cart cart, Long courseId, Double price, String cartStatus, LocalDateTime addedAt) {
+    public Item(Cart cart, Long courseId, Double price,  LocalDateTime addedAt) {
         this.cart = cart;
         this.courseId = courseId;
         this.price = price;
@@ -80,11 +80,11 @@ public class Item {
     public String toString() {
         return "Item{" +
                 "itemId=" + itemId +
-                ", cart=" + cart +
                 ", courseId=" + courseId +
                 ", price=" + price +
                 ", cartStatus='" + cartStatus + '\'' +
                 ", addedAt=" + addedAt +
                 '}';
     }
+
 }

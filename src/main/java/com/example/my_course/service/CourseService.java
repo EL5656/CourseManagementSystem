@@ -1,5 +1,6 @@
 package com.example.my_course.service;
 
+import com.example.my_course.entity.Cart;
 import com.example.my_course.entity.Course;
 import com.example.my_course.entity.Lecturer;
 import com.example.my_course.repository.CourseRepository;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -21,12 +23,15 @@ import javax.sql.rowset.serial.SerialBlob;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final LecturerRepository lecturerRepository;
+    private final ItemService itemService;
 
     private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
 
-    public CourseService(CourseRepository courseRepository, LecturerRepository lecturerRepository) {
+    public CourseService(CourseRepository courseRepository, LecturerRepository lecturerRepository,
+                         ItemService itemService) {
         this.courseRepository = courseRepository;
         this.lecturerRepository = lecturerRepository;
+        this.itemService = itemService;
     }
     private Long getLecturerId(Course course){
         return course.getLecturer().getLecturerId();
@@ -147,5 +152,13 @@ public class CourseService {
 
     public void deleteCourse(Long id){
         courseRepository.deleteById(id);
+    }
+
+    public List<Course> findAllCoursesByCart(Cart cart){
+        List<Long> courseIds = itemService.getCourseIdsByCart(cart);
+        if (courseIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return courseRepository.findAllById(courseIds);
     }
 }
