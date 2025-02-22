@@ -71,4 +71,12 @@ public class CartService {
         cart.updateTotalAmount();
         cartRepository.save(cart);
     }
+
+    public Cart getCartByStudentUid(Long uid) {
+        Cart cart = cartRepository.findByStudentUid(uid);
+        if (cart == null) {
+            throw new RuntimeException(":::Cart not found for UID: " + uid);
+        }
+        return cart;
+    }
 }

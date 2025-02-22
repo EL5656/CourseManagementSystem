@@ -1,11 +1,11 @@
 package com.example.my_course.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.List;
-//todo - may add cart total later
+
 
 @Entity
 @Table(name="cart")
@@ -18,6 +18,7 @@ public class Cart {
     private String studentEmail;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Item> item;
     private double totalAmount;
 

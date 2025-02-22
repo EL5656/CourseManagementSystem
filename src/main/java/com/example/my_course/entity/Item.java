@@ -1,5 +1,6 @@
 package com.example.my_course.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,10 +13,11 @@ public class Item {
     private Long itemId;
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @JsonBackReference
     private Cart cart;
     private Long courseId;
     private Double price;
-    private String cartStatus;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime addedAt;
     public Item() {}
@@ -24,7 +26,6 @@ public class Item {
         this.cart = cart;
         this.courseId = courseId;
         this.price = price;
-        this.cartStatus = cartStatus;
         this.addedAt = addedAt;
     }
 
@@ -60,14 +61,6 @@ public class Item {
         this.price = price;
     }
 
-    public String getCartStatus() {
-        return cartStatus;
-    }
-
-    public void setCartStatus(String cartStatus) {
-        this.cartStatus = cartStatus;
-    }
-
     public LocalDateTime getAddedAt() {
         return addedAt;
     }
@@ -82,7 +75,6 @@ public class Item {
                 "itemId=" + itemId +
                 ", courseId=" + courseId +
                 ", price=" + price +
-                ", cartStatus='" + cartStatus + '\'' +
                 ", addedAt=" + addedAt +
                 '}';
     }

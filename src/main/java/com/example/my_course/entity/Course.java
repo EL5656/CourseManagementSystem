@@ -33,10 +33,10 @@ public class Course {
     public Course() {
 
     }
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "cart_id")
+//    private Cart cart;
 
     @ManyToOne(
             cascade = CascadeType.ALL
@@ -46,13 +46,13 @@ public class Course {
     )
     private CourseSummary courseSummary;
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
+//    public Cart getCart() {
+//        return cart;
+//    }
+//
+//    public void setCart(Cart cart) {
+//        this.cart = cart;
+//    }
 
     @ManyToOne(
             cascade = CascadeType.ALL

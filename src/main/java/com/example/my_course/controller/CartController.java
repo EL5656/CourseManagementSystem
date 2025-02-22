@@ -3,6 +3,7 @@ package com.example.my_course.controller;
 import com.example.my_course.entity.Cart;
 import com.example.my_course.entity.Course;
 import com.example.my_course.repository.CartRepository;
+import com.example.my_course.service.CartService;
 import com.example.my_course.service.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,13 @@ import java.util.List;
 public class CartController {
     private final CartRepository cartRepository;
     private final CourseService courseService;
+    private final CartService cartService;
     public CartController(CartRepository cartRepository,
-                          CourseService courseService) {
+                          CourseService courseService,
+                          CartService cartService) {
         this.cartRepository = cartRepository;
         this.courseService = courseService;
+        this.cartService = cartService;
     }
 
     @GetMapping("/getCartId")
@@ -46,5 +50,11 @@ public class CartController {
             return ResponseEntity.badRequest().body(0.0);
         }
         return ResponseEntity.ok(cart.getTotalAmount());
+    }
+
+    @GetMapping("/{uid}")
+    public ResponseEntity<Cart> getCartByUid(@PathVariable Long uid) {
+        Cart cart = cartService.getCartByStudentUid(uid);
+        return ResponseEntity.ok(cart);
     }
 }
