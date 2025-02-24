@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name="user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User implements UserDetails {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long uid;
     private String username;
     private String email;

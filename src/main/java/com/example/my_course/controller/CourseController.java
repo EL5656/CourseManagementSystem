@@ -3,7 +3,6 @@ package com.example.my_course.controller;
 import com.example.my_course.dto.CourseDto;
 import com.example.my_course.entity.Course;
 import com.example.my_course.service.CourseService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,23 +38,26 @@ public class CourseController {
     public ResponseEntity<byte[]> getImageByCourseId(@PathVariable long id) {
         try {
             byte[] imageBytes = courseService.getImageByCourse(id);
-            if (imageBytes == null) {
-                return ResponseEntity.notFound().build();
+
+            // If no image found, return an empty response instead of error
+            if (imageBytes == null || imageBytes.length == 0) {
+                return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new byte[0]); // Empty response
             }
 
-            String fileType = courseService.getImageFileType(id); // Service method to get the file type, e.g., "jpg", "png"
-            MediaType mediaType = fileType.equals("png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+            String fileType = courseService.getImageFileType(id);
+            MediaType mediaType = ("png".equalsIgnoreCase(fileType)) ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(mediaType);
-            return ResponseEntity.ok().headers(headers).body(imageBytes);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
+
+        } catch (NullPointerException e) {
+            System.err.println("Error: Image not found for Course ID: " + id);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(new byte[0]); // Return empty response instead of 500 error
+
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     @PutMapping("/update_with_lecturer/{id}")
     public ResponseEntity<Course> updateProduct(

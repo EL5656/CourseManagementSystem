@@ -54,9 +54,7 @@ public class Course {
 //        this.cart = cart;
 //    }
 
-    @ManyToOne(
-            cascade = CascadeType.ALL
-    )
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(
             name = "lecturer_id"
     )

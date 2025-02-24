@@ -53,16 +53,14 @@ public class CourseService {
     }
 
     public byte[] getImageByCourse(long courseId) throws SQLException {
-        Course course = courseRepository.findById(courseId).orElseThrow(()->
-                new RuntimeException("No image found with ID "+courseId)
-        );
+        Course course = courseRepository.findById(courseId).orElse(null);
 
-        if(course.getImage()!=null){
+        if (course != null && course.getImage() != null) {
             Blob imageBlob = course.getImage();
             return imageBlob.getBytes(1, (int) imageBlob.length());
-        }else{
-            throw new RuntimeException("No image found for product with ID: " + courseId);
         }
+
+        return new byte[0]; // Return empty array instead of throwing an error
     }
 
     public Course updateCourse(
@@ -71,6 +69,7 @@ public class CourseService {
             throws IOException, SQLException {
 
         Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+
 
         course.setName(name);
         course.setDesc(desc);
@@ -83,13 +82,20 @@ public class CourseService {
         }
 
         Lecturer lecturer = course.getLecturer();
-        if (lecturer != null) {
-            lecturer.setFirstName(firstName);
-            lecturer.setLastName(lastName);
-            lecturer.setEmail(email);
-        }else{
-            throw new IllegalStateException("No lecturer associated with the course.");
+
+        if (lecturer == null || lecturer.getLecturerId() == 0L) {
+            lecturer = lecturerRepository.findByFirstNameAndLastNameAndEmail(firstName, lastName, email);
+            if (lecturer == null) {
+                // If no matching lecturer is found, create a new one
+                lecturer = new Lecturer();
+            }
         }
+
+        lecturer.setFirstName(firstName);
+        lecturer.setLastName(lastName);
+        lecturer.setEmail(email);
+
+        lecturer = lecturerRepository.save(lecturer);
         course.setLecturer(lecturer);
         return courseRepository.save(course);
     }
