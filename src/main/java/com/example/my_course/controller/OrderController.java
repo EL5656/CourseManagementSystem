@@ -24,12 +24,18 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping("/paid")
-    public ResponseEntity<Order> getOrderByPaymentId(@RequestParam String paymentId) {
-        Order order = orderService.findByPaymentId(paymentId);
-        if (order == null) {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/search")
+    public ResponseEntity<?> getOrderByEmail(@RequestParam String email) {
+        Order order = orderService.getOrderByEmail(email);
         return ResponseEntity.ok(order);
+    }
+
+    @PutMapping("/paid")
+    public ResponseEntity<Order> updateOrder(
+            @RequestParam Long cartId,
+            @RequestParam String paymentId) {
+
+        Order updatedOrder = orderService.updateOrder(cartId, paymentId);
+        return ResponseEntity.ok(updatedOrder);
     }
 }

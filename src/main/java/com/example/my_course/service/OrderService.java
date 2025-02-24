@@ -5,6 +5,7 @@ import com.example.my_course.entity.Order;
 import com.example.my_course.repository.CartRepository;
 import com.example.my_course.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import com.example.my_course.exception.OrderNotFoundException;
 
 import java.time.LocalDateTime;
 
@@ -40,22 +41,27 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order findByPaymentId(String paymentId) {
-        Order order = orderRepository.findByPaymentId(paymentId);
+
+    public Order getOrderByEmail(String email) {
+        Order order = orderRepository.findOrderByEmail(email);
         if (order == null) {
-            throw new RuntimeException("Order not found for paymentId: " + paymentId);
+            throw new OrderNotFoundException(email);
+        }
+        return order;
+    }
+    public Order findOrderByCartId(Long cartId) {
+        Order order = orderRepository.findByCartId(cartId);
+        if (order == null) {
+            throw new RuntimeException("Order not found for cartId: " + cartId);
         }
         return order;
     }
 
-    public Order updateOrder(Long cartId, LocalDateTime orderPaid, String paymentId) {
-        Order order = orderRepository.findByCartId(cartId);
-        if (order == null) {
-            throw new RuntimeException("Order not found for paymentId: " + cartId);
-        }
+    public Order updateOrder(Long cartId, String paymentId) {
+        Order order = findOrderByCartId(cartId);
 
         order.setPaymentId(paymentId);
-        order.setPaidAt(orderPaid);
+        order.setPaidAt(LocalDateTime.now());
         order.setOrderStatus("PAID");
 
         return orderRepository.save(order);
