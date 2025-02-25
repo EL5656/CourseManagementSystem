@@ -30,6 +30,12 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @GetMapping("/{cartId}")
+    public ResponseEntity<?> getOrder(@PathVariable Long cartId) {
+        Order order = orderService.findOrderByCartId(cartId);
+        return ResponseEntity.ok(order);
+    }
+
     @PutMapping("/paid")
     public ResponseEntity<Order> updateOrder(
             @RequestParam Long cartId,

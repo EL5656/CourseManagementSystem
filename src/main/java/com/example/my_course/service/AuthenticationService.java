@@ -63,7 +63,8 @@ public class AuthenticationService {
             if (jwtToken != null) {
                 userRepository.save(user);
                 System.out.println("### User saved successfully");
-                return new AuthenticationResponse(jwtToken, "Token generated successfully");
+                //Token generated successfully
+                return new AuthenticationResponse(jwtToken, "Sign Up Successfully");
             } else {
                 // do not save the user to the database
                 throw new Exception("JWT token generation failed, user not saved");
